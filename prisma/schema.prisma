@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters", "relationJoins"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model SalesPerson {
+  id        String   @id @default(uuid())
+  email     String
+  fullname  String
+  password  String
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+  sales     Sale[]
+
+  @@unique([id, email])
+}
+
+model Product {
+  id        String		@id @default(uuid())
+  name      String
+	stock			Int
+  isDeleted Boolean		@default(false)
+  createdAt DateTime	@default(now())
+  updatedAt	DateTime	@updatedAt @default(now())
+  sales     Sale[]
+
+  @@unique([id])
+}
+
+model Sale {
+  id						String			@id @default(uuid())
+  product				Product			@relation(fields: [productId], references: [id])
+  productId			String
+  salesPerson		SalesPerson	@relation(fields: [salesPersonId], references: [id])
+  salesPersonId	String
+  amount				Int
+  isDeleted			Boolean			@default(false)
+  createdAt			DateTime		@default(now())
+  updatedAt			DateTime		@updatedAt @default(now())
+
+  @@unique([id])
+}
